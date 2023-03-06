@@ -9,7 +9,7 @@ printf("ANNEE :  ");
 scanf("%d[^\n]",&(ptrL->annee));
 getchar();
 lireChaine("EDITEUR :", (ptrL->editeur), MAX );
-lireChaine("EMPRUNTEUR :", (ptrL->emprunteur), MAX );
+lireChaine("EMPRUNTEUR :", (ptrL->emprunteur.nomemprunteur), MAX );
 lireChaine("CODE :", (ptrL->code), MAX_CODE );
 }
 
@@ -23,7 +23,7 @@ printf("ANNEE : %d", ptrL->annee);
 printf(" - ");
 afficherChaine("EDITEUR :", (ptrL->editeur));
 printf(" - ");
-afficherChaine("EMPRUNTEUR :", (ptrL->emprunteur));
+afficherChaine("EMPRUNTEUR :", (ptrL->emprunteur.nomemprunteur));
 printf(" - ");
 afficherChaine("CODE :", (ptrL->code));
 printf("\n");

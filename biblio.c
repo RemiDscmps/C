@@ -97,9 +97,9 @@ int emprunter(T_Bibliotheque *ptrB){
 	lireChaine("Saisissez le titre du livre à emprunter", titre, MAX_TITRE);
 	for (i = 0 ; i < ptrB->nbLivres ; i++){
 		if (strcmp(ptrB->etagere[i].titre, titre) == 0){
-			if (ptrB->etagere[i].emprunteur[0] == '\0'){
-				lireChaine("Saisissez le nom de l'emprunteur", Emp, MAX);
-				strcpy(ptrB->etagere[i].emprunteur, Emp);
+			if (ptrB->etagere[i].emprunteur.nomemprunteur[0] == '\0'){
+				lireChaine("Saisissez le nom de l'emprunteur", Emp.nomemprunteur, MAX);
+				strcpy(ptrB->etagere[i].emprunteur.nomemprunteur, Emp.nomemprunteur);
 				test = 1 ;
 			}
 		}
@@ -115,8 +115,8 @@ int rendreLivre(T_Bibliotheque *ptrB){
 	lireChaine("Saisissez le titre du livre à rendre", titre, MAX_TITRE);
 	for (i = 0 ; i < ptrB->nbLivres ; i++){
 		if (strcmp(ptrB->etagere[i].titre, titre) == 0){
-			if (ptrB->etagere[i].emprunteur[0] != '\0'){
-				strcpy(ptrB->etagere[i].emprunteur, "\0");
+			if (ptrB->etagere[i].emprunteur.nomemprunteur[0] != '\0'){
+				strcpy(ptrB->etagere[i].emprunteur.nomemprunteur, "\0");
 				test = 1;
 			}
 		}
@@ -131,6 +131,6 @@ int TrierTitres(T_Bibliotheque *ptrB){
 	
 	
 	
-	
+
 }
 	
