@@ -34,6 +34,9 @@ chx=menu();
 switch (chx)
 	{
 	case 1 :  
+		initFile(&mafile);
+		while(ajouter(&mafile,&i)){i = i * 2 + 3;}
+		afficherFile(&mafile);
 		//testez toutes vos fonctions par un jeu de test de votre choix
 		//testPile(&mapile); //TP9 partie 1 : à ecrire 
 		break;
