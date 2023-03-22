@@ -58,8 +58,10 @@ int depiler( T_Pile *P, T_Elt *pelt)  //renvoie 0 si pile vide, sinon 1
 
 T_Elt sommet(const  T_Pile *P)
 {
-    if (pilevide(P))
+    if (!pilevide(P))
         return P->Elts[P->nbElts - 1];
+    else 
+        return 0;
 }
 
 

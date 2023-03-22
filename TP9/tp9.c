@@ -21,7 +21,7 @@ return choix;
 
 int main()
 {
-//T_File mafile;
+T_File mafile;
 T_Pile mapile;
 int chx;
 int i, test;
@@ -44,29 +44,27 @@ switch (chx)
 		// testFile(&mafile); //TP9 partie 1 : à ecrire 
 
 		initPile(&mapile);
-		printf("1 = %d \n", pilevide(&mapile));
+		printf("1 = %d \n", pilevide(&mapile));//test initpile et pile vide
 		mapile.nbElts =5;
 		mapile.Elts[4]=12;
-		printf(" 12 = %d \n",sommet(&mapile));
-		printf(" 5 = %d \n",hauteur(&mapile));
-		printf("0 = %d \n", pilevide(&mapile));
-		mapile.nbElts =10;printf("1 = %d \n", pilepleine(&mapile));
+		printf(" 12 = %d \n",sommet(&mapile)); // test sommet
+		printf(" 5 = %d \n",hauteur(&mapile)); // test hauteur
+		mapile.nbElts =10;
+		printf("1 = %d \n", pilepleine(&mapile));//test pilepleine
 		initPile(&mapile);
 		for(i=0 ; i <= 9 ; i++){
 			saisirElt(&test);
 			empiler(&mapile,test);
 			//printf("%d \n",hauteur(&mapile));
 		}
-		printf("C'EST");
-		afficherPile(&mapile);
-		printf("\nCASSE\n");
+		printf("\nC'EST \n");
+		afficherPile(&mapile);//test afficherpile
+		printf("\n PLUS CASSE\n");
 		for(i=0;i < mapile.nbElts; i++){
 			printf("\n");
 			printf("%d/ ",mapile.Elts[i]);
-		}
+		} //test le ré-empilement de mapile àprès afficherpile
 		
-		
-
 		break; 
 	case 3 : 
 		//scanf("%s",chaine); //une chaine de longueur <=MAX
