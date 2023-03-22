@@ -3,6 +3,12 @@
 #include "pile.h"
 #include "file.h"
 
+#define passerAuPremierFils(adrP,E) empiler(adrP,E) 
+#define remonterAuPere(adrP,adrE) depiler(adrP,adrE)
+#define passerAuFrereSuivant(adrP,adrE) depiler(adrP,adrE),empiler(adrP,1+(*adrE))
+#define naPlusDeFrere(adrP,TailleChaine) sommet(adrP)==TailleChaine 
+#define noeudTerminal(adrP,TailleChaine) hauteurPile(adrP)==TailleChaine
+#define rechercheTerminee(adrP) pileVide(adrP)
 
 int menu()
 {
@@ -23,6 +29,10 @@ int main()
 {
 T_File mafile;
 T_Pile mapile;
+T_Pile Pile;
+T_Elt Elt;
+char ch[MAX + 1];
+int t;
 int chx;
 int i, test;
 // int taille;
@@ -66,7 +76,21 @@ switch (chx)
 		} //test le ré-empilement de mapile àprès afficherpile
 		
 		break; 
-	case 3 : 
+	case 3 :
+		printf("Saisir la chaine de caractères : ");
+		fgets(ch,MAX,stdin);
+		do{
+			t = 1;
+			while(t){//est valide
+					if(noeudTerminal(&Pile,strlen(ch))){
+						afficherPile(&Pile);}
+					else{
+						 passerAuPremierFils(&Pile,1);
+						 t = 0;
+					}
+				while(naPlusDeFrere(&Pile,strlen(ch)))remonterAuPere(&Pile,&Elt);
+				passerAuFrereSuivant(&Pile,&Elt);
+			}
 		//scanf("%s",chaine); //une chaine de longueur <=MAX
 		//permut(&mapile,chaine); //TP9 partie 2: ecrire permut
 		break;
