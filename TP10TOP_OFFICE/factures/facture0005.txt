@@ -1,0 +1,6 @@
+Client : GERARD
+47 ramette_feuillesA4  (PU=9.900000€) :: 465.299988€
+153 classeur  (PU=3.600000€) :: 550.799988€
+boite_100enveloppes30*21 : stock non suffisant
+crayon : stock non suffisant
+		TOTAL = 1016.099976€

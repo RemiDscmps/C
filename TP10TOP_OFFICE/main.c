@@ -30,47 +30,63 @@ cu=48+u;
 N4[0]=cm;N4[1]=cc;N4[2]=cd;N4[3]=cu;N4[4]='\0';
 }
 
-void lireCommande(char *nomCommande){
-	char nomFacture[30];
-	int i=0, j, N, ref, refp, qtt;
-	float total = 0 ;
-	T_TableauDeProduits Tabprod;
-	char NNNN[5];
-	char nom[30];
-	FILE *ficcommande;
-	FILE *ficproduits;
-	FILE *ficfacture;
-	strcpy(nomFacture,"./factures/facture");
-	strcat(nomFacture, nomCommande + strlen(".commandes/commande"));
-	printf("%s", nomFacture);
-	ficcommande=fopen(nomCommande,"rt");
-	ficproduits=fopen("produits.txt","rt");
-	fscanf(ficcommande,"%s",nom);
-	printf("%s", nom);
-	ficfacture=fopen(nomFacture,"wt");
-	fprintf(ficfacture,"Client : %s \n \n", nom);
-	while(!feof(ficproduits)){
-		fscanf(ficproduits, "%d %s %f", &Tabprod[i].reference, Tabprod[i].libelle, &Tabprod[i].prixU);
-		i++;
-	}
-	while(!feof(ficcommande)){
-		fscanf(ficcommande,"%d %d",&ref,&qtt);
-		if(refp!=ref){
-			for(j=0 ; j<i ; j++){
-				if(ref == Tabprod[j].reference){
-					fprintf(ficfacture, "%d %s (PU=%4f$)	\t%f \n", qtt, Tabprod[j].libelle, Tabprod[j].prixU, qtt * Tabprod[j].prixU);
-					total = total + qtt*Tabprod[j].prixU;
-					refp = ref;
+int verifStock(int ref, int qtt){
+	T_Stock_Total stock;
+	int i = 0, j, k;
+	FILE *ficStock = NULL;
+	ficStock = fopen("./stock.txt","rt");
+	while(! feof(ficStock)){ fscanf(ficStock,"%d %d",&stock[i].ref,&stock[i].stock); i++;}
+	fclose(ficStock);
+	for(j = 0; j < i; j++){
+		if(ref == stock[j].ref){
+			if(qtt <= stock[j].stock){
+				stock[j].stock = stock[j].stock - qtt;
+				ficStock = fopen("./stock.txt","wt");
+				fprintf(ficStock,"%d %d", stock[0].ref, stock[0].stock);
+				for(k = 1; k < i; k++){
+					fprintf(ficStock,"\n%d %d", stock[k].ref, stock[k].stock);
 				}
+				fclose(ficStock);
+				return 1;
 			}
+			return 0;
 		}
-		
 	}
-	fprintf(ficfacture, "\t\tTOTAL = %f" , total);
-	fclose(ficcommande);
-	fclose(ficfacture);
-	fclose(ficproduits);
+}
 
+void lireCommande(char *nomCommande){
+	char nomFacture[30], nomClient[20];
+	int ref, qtt, refp; 
+	float total	= 0;
+	FILE *fic = NULL, *ficCommande = NULL, *ficFacture = NULL;
+	int i = 0, j = 0;
+	T_TableauDeProduits Tableau;
+	strcpy(nomFacture,"./factures/facture");
+	strcat(nomFacture,nomCommande + strlen("./commandes/commande"));
+	fic = fopen("./produits.txt","rt");
+	while(! feof(fic)){ fscanf(fic,"%d %s %f",&Tableau[i].reference,Tableau[i].libelle,&Tableau[i].prixU); i++;}
+	fclose(fic);
+	ficCommande = fopen(nomCommande,"rt");
+	ficFacture = fopen(nomFacture,"wt");
+	fscanf(ficCommande,"%s",nomClient);
+	fprintf(ficFacture, "Client : %s\n",nomClient);
+	while(! feof(ficCommande)){
+		fscanf(ficCommande,"%d %d",&ref,&qtt);
+		if (ref != refp){
+		for(j = 0; j < i; j++){
+			if(ref == Tableau[j].reference){
+				if(verifStock(ref,qtt)){
+				fprintf(ficFacture,"%d %s  (PU=%f€) :: %f€\n",qtt,Tableau[j].libelle,Tableau[j].prixU,Tableau[j].prixU * qtt);
+				total = total + Tableau[j].prixU * qtt;}
+				else {fprintf(ficFacture,"%s : stock non suffisant\n", Tableau[j].libelle); printf("\n Stock insuffisant");}
+			}
+		refp = ref;
+		}
+	}
+	}
+	fprintf(ficFacture,"\t\tTOTAL = %f€",total);
+	fclose(ficCommande);
+	fclose(ficFacture);
 }
 
 void lireLesCommandes() //cette fonction ouvre tous les fichiers commandeXXX.txt avec XXXX démarrant à N
@@ -96,12 +112,13 @@ do //ce do while prend fin dès que fichier commandeXXXX.txt est absent
 	if (ficCommande!=NULL)
 		{ // le fichier commandeNNNN.txt existe
 			printf("\n fichier %s present",nomCommande);
-			lireCommande(nomCommande); // à vous de coder cette fonction lors de ce TP9
 			fclose(ficCommande);
+			lireCommande(nomCommande); // à vous de coder cette fonction lors de ce TP9
+			
 		}
 	else
 		{
-			printf("\n toutes les commandes presentes ont ete traitees. \n");
+			printf("\n toutes les commandes presentes ont ete traitees.\n");
 			FILE *f=fopen("nextFact","w"); // on va ecrire la valeur de N dans enxtFact 
 			// pour 
 			fwrite(&N,1,sizeof(int),f);
@@ -121,12 +138,9 @@ int main()
 	//creation d un fichier d'un seul int nommé nextFact et contenant l'int 1
 	// code à utiliser pour réinitialiser nextFact à 1 si besoin au cours du TP 
 	
+	/*
 	
-	FILE *f;int N=1;
-	f=fopen("nextFact","w");
-	fwrite(&N,1,sizeof(int),f);
-	fclose(f);
-	
+	*/
 
 	//PARTIE 1 du TP : sans Gestion de stock
 	lireLesCommandes(); //lecture de tous les fichiers commandeXXX.txt (fichiers non traités jusqu'ici)	
@@ -135,6 +149,11 @@ int main()
 	//PARTIE 2 du TP : avec Gestion de stock
 	//copiez coller votre travail précédent puis modifiez le  
 	//lireLesCommandes2(); 	
-
+	/*
+	FILE *f;int N=1;
+	f=fopen("nextFact","w");
+	fwrite(&N,1,sizeof(int),f);
+	fclose(f);
+	*/
 	return 0;
 }
