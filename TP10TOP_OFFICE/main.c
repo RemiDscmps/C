@@ -33,13 +33,17 @@ N4[0]=cm;N4[1]=cc;N4[2]=cd;N4[3]=cu;N4[4]='\0';
 int verifStock(int ref, int qtt){
 	T_Stock_Total stock;
 	int i = 0, j, k;
-	FILE *ficStock = NULL;
+	FILE *ficStock = NULL, *ficAlert= NULL;
 	ficStock = fopen("./stock.txt","rt");
+	ficAlert = fopen("./alertes.txt", "wt");
 	while(! feof(ficStock)){ fscanf(ficStock,"%d %d",&stock[i].ref,&stock[i].stock); i++;}
 	fclose(ficStock);
 	for(j = 0; j < i; j++){
 		if(ref == stock[j].ref){
 			if(qtt <= stock[j].stock){
+				if(qtt == stock[j].stock){
+					fprintf(ficAlert, "Attention plus de stock pour l'objet portant la référence :%d \n", stock[j].ref);
+				}
 				stock[j].stock = stock[j].stock - qtt;
 				ficStock = fopen("./stock.txt","wt");
 				fprintf(ficStock,"%d %d", stock[0].ref, stock[0].stock);
@@ -47,6 +51,7 @@ int verifStock(int ref, int qtt){
 					fprintf(ficStock,"\n%d %d", stock[k].ref, stock[k].stock);
 				}
 				fclose(ficStock);
+				fclose(ficAlert);
 				return 1;
 			}
 			return 0;
