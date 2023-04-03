@@ -35,15 +35,11 @@ int verifStock(int ref, int qtt){
 	int i = 0, j, k;
 	FILE *ficStock = NULL, *ficAlert= NULL;
 	ficStock = fopen("./stock.txt","rt");
-	ficAlert = fopen("./alertes.txt", "wt");
 	while(! feof(ficStock)){ fscanf(ficStock,"%d %d",&stock[i].ref,&stock[i].stock); i++;}
 	fclose(ficStock);
 	for(j = 0; j < i; j++){
 		if(ref == stock[j].ref){
 			if(qtt <= stock[j].stock){
-				if(qtt == stock[j].stock){
-					fprintf(ficAlert, "Attention plus de stock pour l'objet portant la référence :%d \n", stock[j].ref);
-				}
 				stock[j].stock = stock[j].stock - qtt;
 				ficStock = fopen("./stock.txt","wt");
 				fprintf(ficStock,"%d %d", stock[0].ref, stock[0].stock);
@@ -51,9 +47,11 @@ int verifStock(int ref, int qtt){
 					fprintf(ficStock,"\n%d %d", stock[k].ref, stock[k].stock);
 				}
 				fclose(ficStock);
-				fclose(ficAlert);
 				return 1;
 			}
+			ficAlert = fopen("./alertes.txt", "wt");
+			fprintf(ficAlert, "Attention plus de stock pour l'objet portant la référence :%d \n", stock[j].ref);
+			fclose(ficAlert);
 			return 0;
 		}
 	}
@@ -143,9 +141,11 @@ int main()
 	//creation d un fichier d'un seul int nommé nextFact et contenant l'int 1
 	// code à utiliser pour réinitialiser nextFact à 1 si besoin au cours du TP 
 	
-	/*
+	FILE *f;int N=1;
+	f=fopen("nextFact","w");
+	fwrite(&N,1,sizeof(int),f);
+	fclose(f);
 	
-	*/
 
 	//PARTIE 1 du TP : sans Gestion de stock
 	lireLesCommandes(); //lecture de tous les fichiers commandeXXX.txt (fichiers non traités jusqu'ici)	
@@ -155,10 +155,7 @@ int main()
 	//copiez coller votre travail précédent puis modifiez le  
 	//lireLesCommandes2(); 	
 	/*
-	FILE *f;int N=1;
-	f=fopen("nextFact","w");
-	fwrite(&N,1,sizeof(int),f);
-	fclose(f);
+	
 	*/
 	return 0;
 }
