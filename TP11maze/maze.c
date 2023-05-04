@@ -67,7 +67,6 @@ bool *wall_right(maze_t *m, int row, int col);
 maze_t *init_maze(int row, int col);
 void free_maze(maze_t *m);
 void print_maze_raw(maze_t const *m);
-void affichercells (maze_t *m);
 
 //void print_maze(maze_t const *m,char *udlr,int t[200][2],int n);
 
@@ -75,7 +74,7 @@ void print_maze(maze_t const *m);
 
 maze_t *compartmentalized_maze(int row, int col);
 
-void printValeurs(maze_t *);
+//void printValeurs(maze_t *);
 
 
 
@@ -96,24 +95,11 @@ void printValeurs(maze_t *m)
     
 }
 
-void affichercells (maze_t *m){
-  
- int i, j;
- for(i=0 ; i < (m->row*m->col) ; i++){
-    printf("case : %d ; visité : %d ; direction : %c ; nbDirections : %d ; Voisins : ",m->cells[i].valeur, m->cells[i].visited, m->cells[i].direction, m->cells[i].nbDirections);
-  
-    for(j =0 ; j < m->cells[i].nbDirections ;  j++){
-      printf("%d,", m->cells[i].QuatreVoisins[j]);
-    }
-    printf("\n");
-  }
-  
-  
-}
-
 
 int main(void) {  /////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\MAIN
-/*   int wh[5 * 5] = {0,0,1,1,1, 
+  srand(time(NULL));
+  int i, j, dep, arr, min, val_dep, val_arr;
+   /*int wh[5 * 5] = {0,0,1,1,1, 
                     0,1,1,1,0, 
                     0,1,0,0,0, 
                     1,0,1,0,0, 
@@ -125,31 +111,44 @@ int main(void) {  /////////////////////////////////////\\\\\\\\\\\\\\\\\\\\\\\\\
                     0,1,0,0, 
                     0,0,0,1}; 
   
-   maze_t *m = init_maze(6, 5); 
+   xmaze_t *m = init_maze(6, 5); 
    if (!m) { 
      printf("Echec d'allocation mémoire pour le labyrinthe.\n"); 
      return 0; 
    } 
    memcpy(m->wallh, wh, 25 * sizeof(int)); 
    memcpy(m->wallv, wv, 24 * sizeof(int)); 
-*/
-  
+  */
   int NL,NC;
   
   printf("\n quel sera le nombre de lignes de votre labyrinthe ? ");scanf("%d",&NL);
-  printf("\n quel sera le nombre de colonnes de votre labyrinthe ? ");scanf("%d",&NC); 
-   
+  printf("\n quel sera le nombre de colonnes de votre labyrinthe ? ");scanf("%d",&NC);
   maze_t *m = compartmentalized_maze(NL, NC); 
-  //print_mazePLEIN(m);
-  
   print_maze(m);
   
-   affichercells(m);
+  i = 1;
+  while(i < NL * NC){
+    dep = rand() % (NL * NC);
+    arr = rand() % (m->cells[dep].nbDirections);
+    if(m->cells[dep].valeur != m->cells[m->cells[dep].QuatreVoisins[arr]].valeur){
+      //printf("case %d vers case %d \n", dep, m->cells[dep].QuatreVoisins[arr]);
+      min = (m->cells[dep].valeur > m->cells[m->cells[dep].QuatreVoisins[arr]].valeur) ? m->cells[m->cells[dep].QuatreVoisins[arr]].valeur : m->cells[dep].valeur;
+      val_dep = m->cells[dep].valeur;
+      val_arr = m->cells[m->cells[dep].QuatreVoisins[arr]].valeur;
+      for(j = 0; j < NL * NC; j++) if( m->cells[j].valeur == val_dep || m->cells[j].valeur == val_arr)m->cells[j].valeur = min;
+      min = (dep > m->cells[dep].QuatreVoisins[arr]) ? m->cells[dep].QuatreVoisins[arr] : dep;
+      if(dep - m->cells[dep].QuatreVoisins[arr] == 1) *wall_right(m, (min - (min % NC)) / NC, min % NC) = 0;
+      if(m->cells[dep].QuatreVoisins[arr] - dep == 1) *wall_right(m, (min - (min % NC)) / NC, min % NC) = 0;
+      if(dep - m->cells[dep].QuatreVoisins[arr] == NC) *wall_under(m, (min - (min % NC)) / NC, min % NC) = 0;
+      if(m->cells[dep].QuatreVoisins[arr] - dep == NC) *wall_under(m, (min - (min % NC)) / NC, min % NC) = 0;
+      i++;
+    }
+  }
+  
+  print_maze(m);
+
   
   free_maze(m);
-  
-  
-  
   
   return 0;
 }
@@ -175,7 +174,7 @@ bool *wall_under(maze_t *m, int row, int col) {
 // Retourne un pointeur sur un maze_t complètement initialisé ou NULL
 // si l'allocation a échoué.
 maze_t *init_maze(int row, int col) {
-  int i, k;
+    int i, j;
   maze_t *m;
   m = malloc(sizeof(maze_t));
   if (!m)
@@ -188,42 +187,27 @@ maze_t *init_maze(int row, int col) {
   m->cells = malloc((row    ) * (col) * sizeof(T_cellule));
   if (!m->wallh || !m->wallv || !m->cells   )
     return NULL;
-    
-  for(i=0 ; i < row*col ; i++){
-    k = 0;
-    m->cells[i].valeur=i;
-    m->cells[i].visited=0;
-    m->cells[i].direction='*';
-    m->cells[i].nbDirections=4;
-    if((i % col == 0) ||(i % col == col-1)){
-      m->cells[i].nbDirections--;
-    }
-    if((i < col) ||(i+col >= col*row)){
-      m->cells[i].nbDirections--;
-    }
-    strcpy(m->cells[i].directionsPossibles,"");
-    
-    if(!((i < col) ||(i+col >= col*row))){
-        m->cells[i].QuatreVoisins[k++]=i-col;
-        m->cells[i].QuatreVoisins[k++]=i+col;
-    }
-    else{
-      if(i < col)
-        m->cells[i].QuatreVoisins[k++]=i+col;
-      else
-        m->cells[i].QuatreVoisins[k++]=i-col;
-    }
-    if(!((i % col == 0) ||(i % col == col-1))){
-       m->cells[i].QuatreVoisins[k++]=i-1;
-       m->cells[i].QuatreVoisins[k++]=i+1;
-    }
-    else{
-       if(i % col == 0)
-          m->cells[i].QuatreVoisins[k++]=i+1;
-        else
-          m->cells[i].QuatreVoisins[k++]=i-1;
-    }
-    
+  for(i = 0; i < row * col; i++){
+    j = 0;
+      m->cells[i].valeur = i;
+      m->cells[i].visited = 0;
+      m->cells[i].direction = '*';
+      m->cells[i].nbDirections = 4;
+      if( i < col ) m->cells[i].nbDirections--;
+      else m->cells[i].QuatreVoisins[j++] = i - col;
+      if(i + col >= col * row) m->cells[i].nbDirections--;
+      else m->cells[i].QuatreVoisins[j++] = i + col;
+      if(i % col == 0) m->cells[i].nbDirections--;
+      else m->cells[i].QuatreVoisins[j++] = i - 1;
+      if(i % col == col - 1) m->cells[i].nbDirections--;
+      else m->cells[i].QuatreVoisins[j++] = i + 1;
+      strcpy(m->cells[i].directionsPossibles, "");
+      
+      /*printf("case %d: %d, %c, %d voisins :",m->cells[i].valeur, m->cells[i].visited,m->cells[i].direction, m->cells[i].nbDirections);
+      for(j = 0; j < m->cells[i].nbDirections; j++){
+        printf(" %d,",m->cells[i].QuatreVoisins[j]);
+      }
+      printf("\n");*/
   }
   return m;
 }
